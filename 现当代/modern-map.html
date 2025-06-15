@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com;
+        img-src 'self' data: blob: https://*.mapbox.com https://api.mapbox.com https://cdnjs.cloudflare.com;
+        connect-src 'self' https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com wss://*.mapbox.com https://cdnjs.cloudflare.com;
+        worker-src 'self' blob:;
+        child-src 'self' blob:;
+        frame-src 'self';
+        font-src 'self' data: https://cdnjs.cloudflare.com;
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>现当代地图 - 金陵诗歌网</title>
+    <!-- 更新到最新版本的 Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; }
+        #map { width: 100%; height: 100%; }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+        }
+        #error {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+            max-width: 80%;
+            text-align: center;
+        }
+        #debug {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 80%;
+            max-height: 200px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="loading">地图加载中...</div>
+    <div id="error"></div>
+    <div id="debug"></div>
+    <script>
+        let map = null;
+        let styleLoaded = false;
+        let markersAdded = false;
+
+        // 调试信息显示函数
+        function debugLog(message) {
+            const debugDiv = document.getElementById('debug');
+            const timestamp = new Date().toLocaleTimeString();
+            debugDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            console.log(message);
+        }
+
+        // 显示加载状态
+        document.getElementById('loading').style.display = 'block';
+        debugLog('页面开始加载');
+
+        // 错误处理
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            const errorMsg = `Error: ${msg}\nURL: ${url}\nLine: ${lineNo}\nColumn: ${columnNo}\nError object: ${JSON.stringify(error)}`;
+            console.error(errorMsg);
+            debugLog(`发生错误: ${msg}`);
+            showError('发生错误：' + msg);
+            return false;
+        };
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Mapbox 访问令牌
+        const mapboxToken = 'pk.eyJ1IjoibXYzMW44IiwiYSI6ImNtYnZzeTU3YTB2MWoyaXMzeHh1eGRwMWIifQ.zkbOTtGpXKD1Wl3EZBli_g';
+        mapboxgl.accessToken = mapboxToken;
+        debugLog('设置 Mapbox token');
+
+        // 定义南京区域边界
+        const nanjingBounds = [
+            [118.35, 31.14], // 西南角坐标
+            [119.23, 32.37]  // 东北角坐标
+        ];
+
+        // 添加标记点
+        function addMarkers() {
+            if (markersAdded || !map || !styleLoaded) {
+                debugLog('跳过添加标记点：地图未就绪或标记点已添加');
+                return;
+            }
+
+            debugLog('开始添加标记点');
+            const locations = [
+                {
+                    name: "南京市中心",
+                    coordinates: [118.7969, 32.0587],
+                    description: "现代南京市的中心区域，是重要的政治、经济、文化中心"
+                },
+                {
+                    name: "夫子庙秦淮河",
+                    coordinates: [118.7867, 32.0287],
+                    description: "现代南京重要的文化旅游区，是著名的历史文化街区"
+                },
+                {
+                    name: "中山陵",
+                    coordinates: [118.8367, 32.0587],
+                    description: "现代南京重要的历史纪念建筑，是著名的旅游景点"
+                }
+            ];
+
+            try {
+                locations.forEach(location => {
+                    const el = document.createElement('div');
+                    el.className = 'marker';
+                    el.style.width = '20px';
+                    el.style.height = '20px';
+                    el.style.backgroundColor = '#e74c3c';
+                    el.style.borderRadius = '50%';
+                    el.style.border = '2px solid #fff';
+                    el.style.cursor = 'pointer';
+                    el.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+
+                    new mapboxgl.Marker(el)
+                        .setLngLat(location.coordinates)
+                        .setPopup(new mapboxgl.Popup({ offset: 25 })
+                            .setHTML(`<h3>${location.name}</h3><p>${location.description}</p>`))
+                        .addTo(map);
+                });
+                markersAdded = true;
+                debugLog('标记点添加完成');
+            } catch (error) {
+                debugLog('添加标记点时发生错误: ' + error.message);
+                showError('添加标记点失败');
+            }
+        }
+
+        // 初始化地图
+        function initMap() {
+            try {
+                debugLog('开始初始化地图');
+                map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/streets-v12',
+                    center: [118.7969, 32.0587],
+                    zoom: 12,
+                    minZoom: 10,
+                    maxZoom: 16,
+                    maxBounds: nanjingBounds,
+                    attributionControl: false,
+                    antialias: true,
+                    failIfMajorPerformanceCaveat: false
+                });
+
+                // 添加导航控件
+                map.addControl(new mapboxgl.NavigationControl({
+                    showCompass: false,
+                    showZoom: true,
+                    visualizePitch: false
+                }), 'bottom-right');
+                debugLog('导航控件添加完成');
+
+                // 地图加载事件
+                map.on('load', () => {
+                    debugLog('地图基础样式加载成功');
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    // 监听样式加载事件
+                    map.on('style.load', () => {
+                        debugLog('样式加载成功');
+                        styleLoaded = true;
+                        addMarkers();
+                    });
+
+                    map.on('style.error', (e) => {
+                        const errorMsg = e.error ? e.error.message : '未知错误';
+                        debugLog('样式加载失败: ' + errorMsg);
+                        showError('样式加载失败，使用默认样式');
+                    });
+
+                    // 设置自定义样式
+                    try {
+                        map.setStyle('mapbox://styles/mv31n8/cmaz1iahj00jq01rfeu0j04b6');
+                        debugLog('开始加载自定义样式');
+                    } catch (error) {
+                        debugLog('设置自定义样式时发生错误: ' + error.message);
+                        showError('设置自定义样式失败');
+                    }
+                });
+
+                // 错误事件监听
+                map.on('error', (e) => {
+                    const errorMsg = e.error ? e.error.message : '未知错误';
+                    debugLog('地图错误: ' + errorMsg);
+                    if (!errorMsg.includes('Style is not done loading')) {
+                        showError('地图错误：' + errorMsg);
+                    }
+                });
+
+                // 添加地图状态检查
+                setInterval(() => {
+                    if (map && !map.loaded()) {
+                        debugLog('地图加载状态检查：未完成加载');
+                    }
+                }, 5000);
+
+            } catch (error) {
+                debugLog('地图初始化失败: ' + error.message);
+                showError('地图初始化失败：' + error.message);
+            }
+        }
+
+        // 启动地图初始化
+        initMap();
+
+        // 检查坐标是否在边界内
+        function isWithinBounds(point, bounds) {
+            return point.lng >= bounds[0][0] && point.lng <= bounds[1][0] &&
+                   point.lat >= bounds[0][1] && point.lat <= bounds[1][1];
+        }
+    </script>
+</body>
+</html> 
