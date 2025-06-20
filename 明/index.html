@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com;
+        img-src 'self' data: blob: https://*.mapbox.com https://api.mapbox.com https://cdnjs.cloudflare.com;
+        connect-src 'self' https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com wss://*.mapbox.com https://cdnjs.cloudflare.com;
+        worker-src 'self' blob:;
+        child-src 'self' blob:;
+        frame-src 'self';
+        font-src 'self' data: https://cdnjs.cloudflare.com;
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>明朝地图 - 金陵诗歌网</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="map"></div>
+    <div id="loading">地图加载中...</div>
+    <div id="error"></div>
+    <div id="debug"></div>
+
+    <script>
+        // 定义地图特定的配置
+        window.mapStyle = 'mapbox://styles/mv31n8/cmaz12jms00jn01rf716j3ynx';
+        window.mapLocations = [
+            {
+                name: "应天府",
+                coordinates: [118.7969, 32.0587],
+                description: "明朝时期的应天府治所，是重要的政治、文化中心"
+            },
+            {
+                name: "明故宫",
+                coordinates: [118.7867, 32.0487],
+                description: "明朝时期的皇宫所在地，是重要的政治中心"
+            },
+            {
+                name: "夫子庙",
+                coordinates: [118.7767, 32.0287],
+                description: "明朝时期重要的文化场所，文人雅士常在此吟诗作对"
+            }
+        ];
+    </script>
+    <script src="script.js"></script>
+</body>
+</html> 
