@@ -19,37 +19,200 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>唐朝地图 - 金陵诗歌网</title>
+    <!-- 更新到最新版本的 Mapbox GL JS -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" />
-    <link href="style.css" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; }
+        #map { width: 100%; height: 100%; }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+        }
+        #error {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+            max-width: 80%;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <div id="map"></div>
     <div id="loading">地图加载中...</div>
     <div id="error"></div>
-    <div id="debug"></div>
-
     <script>
-        // 定义地图特定的配置
-        window.mapStyle = 'mapbox://styles/mv31n8/cmay39lgt00zy01s56c1q96so';
-        window.mapLocations = [
-            {
-                name: "江宁府",
-                coordinates: [118.7969, 32.0587],
-                description: "唐朝时期的江宁府治所，是重要的政治、文化中心"
-            },
-            {
-                name: "石头城",
-                coordinates: [118.7667, 32.0487],
-                description: "唐朝时期的重要军事要塞，位于长江岸边"
-            },
-            {
-                name: "秦淮河",
-                coordinates: [118.7767, 32.0287],
-                description: "唐朝时期重要的商业和文化区域，文人雅士常在此吟诗作对"
-            }
+        let map = null;
+        let styleLoaded = false;
+        let markersAdded = false;
+
+        // 显示加载状态
+        document.getElementById('loading').style.display = 'block';
+
+        // 错误处理
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            const errorMsg = `Error: ${msg}\nURL: ${url}\nLine: ${lineNo}\nColumn: ${columnNo}\nError object: ${JSON.stringify(error)}`;
+            console.error(errorMsg);
+            showError('发生错误：' + msg);
+            return false;
+        };
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Mapbox 访问令牌
+        const mapboxToken = 'pk.eyJ1IjoibXYzMW44IiwiYSI6ImNtYnZzeTU3YTB2MWoyaXMzeHh1eGRwMWIifQ.zkbOTtGpXKD1Wl3EZBli_g';
+        mapboxgl.accessToken = mapboxToken;
+
+        // 定义南京区域边界
+        const nanjingBounds = [
+            [118.35, 31.14], // 西南角坐标
+            [119.23, 32.37]  // 东北角坐标
         ];
+
+        // 添加标记点
+        function addMarkers() {
+            if (markersAdded || !map || !styleLoaded) {
+                return;
+            }
+
+            const locations = [
+                {
+                    name: "唐朝金陵城",
+                    coordinates: [118.7969, 32.0587],
+                    description: "唐朝时期的金陵城，是重要的政治、经济、文化中心"
+                },
+                {
+                    name: "石头城",
+                    coordinates: [118.7467, 32.0617],
+                    description: "唐朝时期的军事要塞，位于长江南岸"
+                },
+                {
+                    name: "玄武湖",
+                    coordinates: [118.7867, 32.0787],
+                    description: "唐朝时期的重要水系，文人雅士常在此游览"
+                }
+            ];
+
+            try {
+                locations.forEach(location => {
+                    const el = document.createElement('div');
+                    el.className = 'marker';
+                    el.style.width = '20px';
+                    el.style.height = '20px';
+                    el.style.backgroundColor = '#e74c3c';
+                    el.style.borderRadius = '50%';
+                    el.style.border = '2px solid #fff';
+                    el.style.cursor = 'pointer';
+                    el.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+
+                    new mapboxgl.Marker(el)
+                        .setLngLat(location.coordinates)
+                        .setPopup(new mapboxgl.Popup({ offset: 25 })
+                            .setHTML(`<h3>${location.name}</h3><p>${location.description}</p>`))
+                        .addTo(map);
+                });
+                markersAdded = true;
+            } catch (error) {
+                showError('添加标记点失败');
+            }
+        }
+
+        // 初始化地图
+        function initMap() {
+            try {
+                map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/streets-v12',
+                    center: [118.7969, 32.0587],
+                    zoom: 12,
+                    minZoom: 10,
+                    maxZoom: 16,
+                    maxBounds: nanjingBounds,
+                    attributionControl: false,
+                    antialias: true,
+                    failIfMajorPerformanceCaveat: false
+                });
+
+                // 添加导航控件
+                map.addControl(new mapboxgl.NavigationControl({
+                    showCompass: false,
+                    showZoom: true,
+                    visualizePitch: false
+                }), 'bottom-right');
+
+                // 地图加载事件
+                map.on('load', () => {
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    // 监听样式加载事件
+                    map.on('style.load', () => {
+                        styleLoaded = true;
+                        addMarkers();
+                    });
+
+                    map.on('style.error', (e) => {
+                        showError('样式加载失败，使用默认样式');
+                    });
+
+                    // 设置自定义样式
+                    try {
+                        map.setStyle('mapbox://styles/mv31n8/cmay39lgt00zy01s56c1q96so');
+                    } catch (error) {
+                        showError('设置自定义样式失败');
+                    }
+                });
+
+                // 错误事件监听
+                map.on('error', (e) => {
+                    const errorMsg = e.error ? e.error.message : '未知错误';
+                    if (!errorMsg.includes('Style is not done loading')) {
+                        showError('地图错误：' + errorMsg);
+                    }
+                });
+
+                // 添加地图状态检查
+                setInterval(() => {
+                    if (map && !map.loaded()) {
+                    }
+                }, 5000);
+
+            } catch (error) {
+                showError('地图初始化失败：' + error.message);
+            }
+        }
+
+        // 启动地图初始化
+        initMap();
+
+        // 检查坐标是否在边界内
+        function isWithinBounds(point, bounds) {
+            return point.lng >= bounds[0][0] && point.lng <= bounds[1][0] &&
+                   point.lat >= bounds[0][1] && point.lat <= bounds[1][1];
+        }
     </script>
-    <script src="script.js"></script>
 </body>
 </html> 
