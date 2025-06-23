@@ -2,23 +2,13 @@ let map = null;
 let styleLoaded = false;
 let markersAdded = false;
 
-// 调试信息显示函数
-function debugLog(message) {
-    const debugDiv = document.getElementById('debug');
-    const timestamp = new Date().toLocaleTimeString();
-    debugDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
-    console.log(message);
-}
-
 // 显示加载状态
 document.getElementById('loading').style.display = 'block';
-debugLog('页面开始加载');
 
 // 错误处理
 window.onerror = function(msg, url, lineNo, columnNo, error) {
     const errorMsg = `Error: ${msg}\nURL: ${url}\nLine: ${lineNo}\nColumn: ${columnNo}\nError object: ${JSON.stringify(error)}`;
     console.error(errorMsg);
-    debugLog(`发生错误: ${msg}`);
     showError('发生错误：' + msg);
     return false;
 };
@@ -35,7 +25,6 @@ function showError(message) {
 // Mapbox 访问令牌
 const mapboxToken = 'pk.eyJ1IjoibXYzMW44IiwiYSI6ImNtYnZzeTU3YTB2MWoyaXMzeHh1eGRwMWIifQ.zkbOTtGpXKD1Wl3EZBli_g';
 mapboxgl.accessToken = mapboxToken;
-debugLog('设置 Mapbox token');
 
 // 定义南京区域边界
 const nanjingBounds = [
@@ -46,18 +35,13 @@ const nanjingBounds = [
 // 添加标记点
 function addMarkers() {
     if (markersAdded || !map || !styleLoaded) {
-        debugLog('跳过添加标记点：地图未就绪或标记点已添加');
         return;
     }
-
-    debugLog('开始添加标记点');
     const locations = window.mapLocations || [];
-
     try {
         locations.forEach(location => {
             const el = document.createElement('div');
             el.className = 'marker';
-
             new mapboxgl.Marker(el)
                 .setLngLat(location.coordinates)
                 .setPopup(new mapboxgl.Popup({ offset: 25 })
@@ -65,9 +49,7 @@ function addMarkers() {
                 .addTo(map);
         });
         markersAdded = true;
-        debugLog('标记点添加完成');
     } catch (error) {
-        debugLog('添加标记点时发生错误: ' + error.message);
         showError('添加标记点失败');
     }
 }
@@ -75,7 +57,6 @@ function addMarkers() {
 // 初始化地图
 function initMap() {
     try {
-        debugLog('开始初始化地图');
         map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v12',
@@ -88,61 +69,38 @@ function initMap() {
             antialias: true,
             failIfMajorPerformanceCaveat: false
         });
-
-        // 添加导航控件
         map.addControl(new mapboxgl.NavigationControl({
             showCompass: false,
             showZoom: true,
             visualizePitch: false
         }), 'bottom-right');
-        debugLog('导航控件添加完成');
-
-        // 地图加载事件
         map.on('load', () => {
-            debugLog('地图基础样式加载成功');
             document.getElementById('loading').style.display = 'none';
-            
-            // 监听样式加载事件
             map.on('style.load', () => {
-                debugLog('样式加载成功');
                 styleLoaded = true;
                 addMarkers();
             });
-
             map.on('style.error', (e) => {
-                const errorMsg = e.error ? e.error.message : '未知错误';
-                debugLog('样式加载失败: ' + errorMsg);
                 showError('样式加载失败，使用默认样式');
             });
-
-            // 设置自定义样式
             try {
                 map.setStyle(window.mapStyle || 'mapbox://styles/mapbox/streets-v12');
-                debugLog('开始加载自定义样式');
             } catch (error) {
-                debugLog('设置自定义样式时发生错误: ' + error.message);
                 showError('设置自定义样式失败');
             }
         });
-
-        // 错误事件监听
         map.on('error', (e) => {
             const errorMsg = e.error ? e.error.message : '未知错误';
-            debugLog('地图错误: ' + errorMsg);
             if (!errorMsg.includes('Style is not done loading')) {
                 showError('地图错误：' + errorMsg);
             }
         });
-
-        // 添加地图状态检查
         setInterval(() => {
             if (map && !map.loaded()) {
-                debugLog('地图加载状态检查：未完成加载');
+                // 地图加载状态检查（已移除debugLog）
             }
         }, 5000);
-
     } catch (error) {
-        debugLog('地图初始化失败: ' + error.message);
         showError('地图初始化失败：' + error.message);
     }
 }
