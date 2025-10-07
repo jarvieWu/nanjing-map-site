@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com https://events.mapbox.com;
+        style-src 'self' 'unsafe-inline' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com;
+        img-src 'self' data: blob: https://*.mapbox.com https://api.mapbox.com https://cdnjs.cloudflare.com https://events.mapbox.com;
+        connect-src 'self' https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com wss://*.mapbox.com https://cdnjs.cloudflare.com;
+        worker-src 'self' blob: https://*.mapbox.com;
+        child-src 'self' blob:;
+        frame-src 'self';
+        font-src 'self' data: https://cdnjs.cloudflare.com https://*.mapbox.com;
+        object-src 'none';
+        base-uri 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Cache-Control" content="public, max-age=3600">
+    <meta http-equiv="Pragma" content="cache">
+    <meta http-equiv="Expires" content="3600">
+    <title>明朝地图 - 金陵诗歌网</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js" crossorigin="anonymous"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="map"></div>
+    <div id="loading">地图加载中...</div>
+    <div id="error"></div>
+    
+    <script>
+        // 定义地图特定的配置
+        window.mapStyle = 'mapbox://styles/mv31n8/cmaz12jms00jn01rf716j3ynx';
+        window.mapLocations = [
+            {
+                name: "上新河",
+                coordinates: [118.7231, 32.0257],
+                description: "明代重要水系，陈复在此写下《上新河待风》"
+            },
+            {
+                name: "牛首山",
+                coordinates: [118.7457, 31.9136],
+                description: "明代名山，陈沂在此写下《经牛头山寺》"
+            }
+        ];
+    </script>
+    <script src="script.js"></script>
+</body>
+</html> 
