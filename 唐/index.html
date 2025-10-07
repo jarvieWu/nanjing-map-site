@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com https://events.mapbox.com;
+        style-src 'self' 'unsafe-inline' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com;
+        img-src 'self' data: blob: https://*.mapbox.com https://api.mapbox.com https://cdnjs.cloudflare.com https://events.mapbox.com;
+        connect-src 'self' https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com wss://*.mapbox.com https://cdnjs.cloudflare.com;
+        worker-src 'self' blob: https://*.mapbox.com;
+        child-src 'self' blob:;
+        frame-src 'self';
+        font-src 'self' data: https://cdnjs.cloudflare.com https://*.mapbox.com;
+        object-src 'none';
+        base-uri 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Cache-Control" content="public, max-age=3600">
+    <meta http-equiv="Pragma" content="cache">
+    <meta http-equiv="Expires" content="3600">
+    <title>唐朝地图 - 金陵诗歌网</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js" crossorigin="anonymous"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="map"></div>
+    <div id="loading">地图加载中...</div>
+    <div id="error"></div>
+    
+    <script>
+        // 定义地图特定的配置
+        window.mapStyle = 'mapbox://styles/mv31n8/cmay39lgt00zy01s56c1q96so';
+        window.mapLocations = [
+            {
+                name: "栖霞寺",
+                coordinates: [118.9565, 32.1511],
+                description: "唐代著名佛教寺庙，常衮、顾况、綦毋潜、权德舆、皮日休等诗人曾在此留下诗作"
+            },
+            {
+                name: "新林浦",
+                coordinates: [118.7234, 31.9509],
+                description: "唐代重要渡口，李白在此写下《新林浦阻风寄友人》"
+            },
+            {
+                name: "劳劳亭",
+                coordinates: [118.7564, 31.9895],
+                description: "唐代送别之地，李白在此写下《劳劳亭》和《劳劳亭歌》"
+            },
+            {
+                name: "金陵凤凰台",
+                coordinates: [118.7706, 32.0172],
+                description: "唐代著名景点，李白在此写下《金陵凤凰台置酒》和《登金陵凤凰台》"
+            },
+            {
+                name: "瓦官寺",
+                coordinates: [118.7733, 32.01789],
+                description: "唐代佛教寺庙，李白在此写下《登瓦官阁》"
+            },
+            {
+                name: "白鹭洲",
+                coordinates: [118.7958, 32.0182],
+                description: "唐代江心洲，李白在此写下《宿白鹭洲寄杨江宁》"
+            },
+            {
+                name: "台城",
+                coordinates: [118.8014, 32.0619],
+                description: "唐代宫城遗址，刘禹锡、罗隐、韦庄等诗人曾在此怀古"
+            },
+            {
+                name: "乌衣巷",
+                coordinates: [118.7915, 32.0180],
+                description: "唐代著名巷陌，刘禹锡在此写下《乌衣巷》"
+            },
+            {
+                name: "石头城",
+                coordinates: [118.7547, 32.0509],
+                description: "唐代军事要塞，罗隐在此写下《春日登上元石头故城》"
+            },
+            {
+                name: "清凉寺",
+                coordinates: [118.7607, 32.0493],
+                description: "唐代佛教寺庙，唐彦谦在此写下《游清凉寺》"
+            }
+        ];
+    </script>
+    <script src="script.js"></script>
+</body>
+</html> 
