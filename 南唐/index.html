@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com https://events.mapbox.com;
+        style-src 'self' 'unsafe-inline' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com;
+        img-src 'self' data: blob: https://*.mapbox.com https://api.mapbox.com https://cdnjs.cloudflare.com https://events.mapbox.com;
+        connect-src 'self' https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com wss://*.mapbox.com https://cdnjs.cloudflare.com;
+        worker-src 'self' blob: https://*.mapbox.com;
+        child-src 'self' blob:;
+        frame-src 'self';
+        font-src 'self' data: https://cdnjs.cloudflare.com https://*.mapbox.com;
+        object-src 'none';
+        base-uri 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Cache-Control" content="public, max-age=3600">
+    <meta http-equiv="Pragma" content="cache">
+    <meta http-equiv="Expires" content="3600">
+    <title>南唐地图 - 金陵诗歌网</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js" crossorigin="anonymous"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="map"></div>
+    <div id="loading">地图加载中...</div>
+    <div id="error"></div>
+    
+    <script>
+        // 定义地图特定的配置
+        window.mapStyle = 'mapbox://styles/mv31n8/cmay0ym40005f01rc16oha2oc';
+        window.mapLocations = [
+            {
+                name: "下关江畔",
+                coordinates: [118.745, 32.106],
+                description: "南唐时期长江边的重要渡口，冯延巳在此写下《临江仙·秣陵江上多离别》"
+            },
+            {
+                name: "无想寺",
+                coordinates: [119.033622390573, 31.5972667078786],
+                description: "南唐时期著名的佛教寺庙，韩熙载在此写下《溧水无想寺赠僧》"
+            },
+            {
+                name: "玄武湖",
+                coordinates: [118.7975, 32.0706],
+                description: "南唐时期的重要湖泊，李璟在此写下《游后湖赏莲花》"
+            },
+            {
+                name: "钟山",
+                coordinates: [118.853938495504, 32.0732314315242],
+                description: "南唐时期的重要山脉，徐铉在此写下《游蒋山题辛夷花寄陈奉礼》"
+            }
+        ];
+    </script>
+    <script src="script.js"></script>
+</body>
+</html> 
