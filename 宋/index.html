@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com https://events.mapbox.com;
+        style-src 'self' 'unsafe-inline' https://api.mapbox.com https://*.mapbox.com https://cdnjs.cloudflare.com;
+        img-src 'self' data: blob: https://*.mapbox.com https://api.mapbox.com https://cdnjs.cloudflare.com https://events.mapbox.com;
+        connect-src 'self' https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com wss://*.mapbox.com https://cdnjs.cloudflare.com;
+        worker-src 'self' blob: https://*.mapbox.com;
+        child-src 'self' blob:;
+        frame-src 'self';
+        font-src 'self' data: https://cdnjs.cloudflare.com https://*.mapbox.com;
+        object-src 'none';
+        base-uri 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Cache-Control" content="public, max-age=3600">
+    <meta http-equiv="Pragma" content="cache">
+    <meta http-equiv="Expires" content="3600">
+    <title>宋朝地图 - 金陵诗歌网</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js" crossorigin="anonymous"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="map"></div>
+    <div id="loading">地图加载中...</div>
+    <div id="error"></div>
+    
+    <script>
+        // 定义地图特定的配置
+        window.mapStyle = 'mapbox://styles/mv31n8/cmaz05wg2006t01sw69ar2k7m';
+        window.mapLocations = [
+            {
+                name: "钟山",
+                coordinates: [118.8539, 32.0732],
+                description: "宋代重要山脉，王安石在此写下《两山间》、《游钟山二首》、《岁晚》、《北陂杏花》等多首诗作"
+            },
+            {
+                name: "无想山",
+                coordinates: [119.0171, 31.6025],
+                description: "宋代名山，周邦彦在此写下《满庭芳（风老莺雏）》"
+            },
+            {
+                name: "赏心亭",
+                coordinates: [118.7694, 32.0276],
+                description: "宋代著名亭台，辛弃疾在此写下《念奴娇（我来吊古）》、《水龙吟·登建康赏心亭》、《菩萨蛮·金陵赏心亭为叶丞相赋》"
+            },
+            {
+                name: "孙权墓",
+                coordinates: [118.8390, 32.0492],
+                description: "三国吴大帝孙权陵墓，曾极在此写下《吴大帝陵》"
+            },
+            {
+                name: "金陵凤凰台",
+                coordinates: [118.7706, 32.0172],
+                description: "宋代著名景点，郭祥正在此写下《凤凰台次李太白韵》"
+            },
+            {
+                name: "雨花台",
+                coordinates: [118.7814, 31.9960],
+                description: "宋代著名景点，韩元吉在此写下《水调歌头·雨花台》"
+            },
+            {
+                name: "定林寺",
+                coordinates: [118.8461, 32.0653],
+                description: "宋代佛教寺庙，贺铸在此写下《题定林寺》"
+            },
+            {
+                name: "游子山",
+                coordinates: [119.0212, 31.3552],
+                description: "宋代名山，孔文昱在此写下《卜居游山乡》"
+            },
+            {
+                name: "清凉寺",
+                coordinates: [118.7607, 32.0493],
+                description: "宋代佛教寺庙，刘克庄在此写下《清凉寺》"
+            },
+            {
+                name: "清溪河",
+                coordinates: [118.8239, 32.0426],
+                description: "宋代重要水系，马光祖在此写下《青溪》"
+            },
+            {
+                name: "秦淮河",
+                coordinates: [118.7895, 32.0198],
+                description: "宋代重要水系，潘阆在此写下《金陵禁林有感》"
+            },
+            {
+                name: "白鹭洲",
+                coordinates: [118.7958, 32.0182],
+                description: "宋代江心洲，周紫芝在此写下《水调歌头（岁晚念行役）》，范成大、梁栋也在此留下诗作"
+            },
+            {
+                name: "石头城",
+                coordinates: [118.7547, 32.0509],
+                description: "宋代军事要塞，周邦彦在此写下《西河·金陵怀古》"
+            }
+        ];
+    </script>
+    <script src="script.js"></script>
+</body>
+</html> 
